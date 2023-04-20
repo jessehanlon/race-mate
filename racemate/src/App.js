@@ -53,5 +53,32 @@ function App() {
       Header: "Comments",
       accessor: "comments",
     }
-  ]);
+  ], []);
+  
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({columns, data});
+
+  return (
+    <div className='race-results'>
+      <div className='container'>
+        <table {...getTableProps()}>
+          <thead>
+            {headerGroups.map((headerGroup) => 
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) =>  (
+                  <th {...column.getHeaderProps()}>
+                    {column.render("Header")}
+                  </th>
+                ))}
+              </tr>
+            )};
+          </thead>
+          <tbody>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
 }
+
+export default App;
