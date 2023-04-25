@@ -138,14 +138,14 @@ const App = () => {
             </Tooltip>
           </Box>
         )}
-    /*
+    
         renderTopToolbarCustomActions={() => (
           <Button
             color="secondary"
             onClick={() => setCreateModalOpen(true)}
             variant="contained"
           >
-            Create New Account
+            Add a Boat
           </Button>
         )}
       />
@@ -154,7 +154,7 @@ const App = () => {
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         onSubmit={handleCreateNewRow}
-    */
+    
       />
     </>
     );
@@ -175,7 +175,7 @@ const handleSubmit = () => {
 
 return (
   <Dialog open={open}>
-    <DialogTitle textAlign="center">Create New Account</DialogTitle>
+    <DialogTitle textAlign="center">Add a Boat</DialogTitle>
     <DialogContent>
       <form onSubmit={(e) => e.preventDefault()}>
         <Stack
@@ -201,7 +201,7 @@ return (
     <DialogActions sx={{ p: '1.25rem' }}>
       <Button onClick={onClose}>Cancel</Button>
       <Button color="secondary" onClick={handleSubmit} variant="contained">
-        Create New Account
+        Add Boat
       </Button>
     </DialogActions>
   </Dialog>
