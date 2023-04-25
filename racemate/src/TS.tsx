@@ -4,11 +4,11 @@ export type Boat = {
     design: string;
     owner: string;
     rating: number;
-    start: Date;
-    finish: Date;
-    elapsed: Date;
+    start: number;
+    finish: number;
+    elapsed: number;
     tcf: number;
-    corrected: Date;
+    corrected: number;
     place: number;
     comments: string;
 }

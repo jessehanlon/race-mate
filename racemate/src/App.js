@@ -23,12 +23,8 @@ const App = () => {
 
 
   const handleCreateNewRow = (values) => {
-
     tableData.push(values);
-    //TODO:
-      // create a set of full values from input to 
-      // update table data
-    setTableData(...tableData);
+    setTableData([...tableData]);
   }
 
   const handleDeleteRow = useCallback(
@@ -39,7 +35,7 @@ const App = () => {
         return;
       }
       tableData.splice(row.index, 1);
-      setTableData(...tableData);
+      setTableData([...tableData]);
 
     }
   )
@@ -96,21 +92,6 @@ const App = () => {
       [],
     );
 
-    //optionally, you can manage any/all of the table state yourself
-    const [rowSelection, setRowSelection] = useState({});
-
-    useEffect(() => {
-    //do something when the row selection changes
-    }, [rowSelection]);
-
-    //Or, optionally, you can get a reference to the underlying table instance
-    const tableInstanceRef = useRef(null);
-
-    const someEventHandler = () => {
-    //read the table state during an event from the table instance ref
-    console.log(tableInstanceRef.current.getState().sorting);
-    }
-
     return (
       <>
       <MaterialReactTable
@@ -123,7 +104,7 @@ const App = () => {
           },
         }}
         columns={columns}
-        data={data}
+        data={tableData}
         editingMode="modal" //default
         enableColumnOrdering
         enableEditing
