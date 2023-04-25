@@ -1,67 +1,13 @@
-.navbar {
-  text-align: center;
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-#nav_title {
-  display: inline-block;
-  margin: auto;
-  font-family: 'Montserrat', sans-serif;
-  color: aliceblue;
-  padding-top: 1.5%;
-  padding-bottom:1.5%;
-  font-size: 30px;
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
 }
-
-#description_block {
-  text-align: center;
-  padding: 2.5%
-}
-
-#description {
-  font-family: 'Source Sans Pro', sans-serif;
-  font-size: 19px;
-}
-
-.input-group {
-  padding-left: 35%;
-  padding-right: 35%;
-  padding-top: 2%;
-}
-
-#wind-btn-group {
-  text-align: center;
-  padding-top:2%;
-}
-
-.btn-primary {
-  background-color: #39bdfa !important;
-  border-color: #39bdfa !important;
-}
-
-.btn-primary:hover, btn-primary:active {
-  background-color: #02aaf7 !important;
-}
-
-.btn-success {
-  background-color: #8bc34a !important;
-  border-color: #8bc34a !important; 
-}
-
-.btn-success:hover, btn-success:active {
-  background-color: #77ad37 !important;
-}
-
-.btn-danger {
-  background-color: #f44336 !important;
-  border-color: #f44336 !important; 
-}
-
-.btn-danger:hover, btn-warning:active {
-  background-color: #de1a0b !important;
-}
-
-#add-race-section {
-  text-align: center;
-  padding-top: 3%;
-}
-

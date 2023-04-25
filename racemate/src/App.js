@@ -1,193 +1,211 @@
-import "./App.css";
-import * as React from 'react';
-import { useTable } from 'react-table';
+import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
+import MaterialReactTable from 'material-react-table';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  MenuItem,
+  Stack,
+  TextField,
+  Tooltip,
+} from '@mui/material';
+import { Delete, Edit } from '@mui/icons-material';
+import { data } from "./makeData.ts"
 
-var boats = [];
-
-
-
-function App() {
-  const data = React.useMemo((boats) => []);
-  const columns = React.useMemo(() => [
-    {
-      Header: "Boat",
-      accessor: "boat",
-    },
-    {
-      Header: "Sail Number",
-      accessor: "sail_no",
-    },
-    {
-      Header: "Design",
-      accessor: "design",
-    },
-    {
-      Header: "Owner",
-      accessor: "owner",
-    },
-    {
-      Header: "Rating",
-      accessor: "rating",
-    },
-    {
-      Header: "Time Correction Factor",
-      accessor: "tcf",
-    },
-    {
-      Header: "Start Time",
-      accessor: "start",
-    },
-    {
-      Header: "Finish Time",
-      accessor: "finish",
-    },
-    {
-      Header: "Elapsed Time",
-      accessor: "elapsed",
-    },
-    {
-      Header: "Corrected Time",
-      accessor: "corrected",
-    },
-    {
-      Header: "Finishing Place",
-      accessor: "place",
-    },
-    {
-      Header: "Comments",
-      accessor: "comments",
-    }
-  ], []);
-  
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({columns, data});
-
-  return (
-    <div className='race_results'>
-      <div className='container'>
-        <table {...getTableProps()}>
-          <thead>
-            {headerGroups.map((headerGroup) => 
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) =>  (
-                  <th {...column.getHeaderProps()}>
-                    {column.render("Header")}
-                  </th>
-                ))}
-              </tr>
-            )};
-          </thead>
-          <tbody {...getTableBodyProps() }>
-          {rows.map((row) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => (
-                  <td {...cell.getCellProps()}>
-                    {cell.render("Cell")}
-                  </td>
-                ))}
-              </tr>
-            )
-          })}
-            
-          </tbody>
-        </table>
-      </div>
-
-      <div id="add-boat">
-        <a id="add-boat-title">Add Boat</a>
-        <div className="input-group" id="boat-details">
-              <span className="input-group-text" id="inputGroup-sizing-sm">Boat Name</span>
-              <input type="text" className="form-control" id="boat" aria-describedby="inputGroup-sizing-sm"></input>
-          </div>
-          <div className="input-group">
-            <span className="input-group-text" id="inputGroup-sizing-sm">Sail Number</span>
-              <input type="text" className="form-control" id="sail_no" aria-describedby="inputGroup-sizing-sm"></input>
-          </div>
-          <div className="input-group">
-            <span className="input-group-text" id="inputGroup-sizing-sm">Boat Design</span>
-              <input type="text" className="form-control" id="design" aria-describedby="inputGroup-sizing-sm"></input>
-          </div>
-          <div className="input-group">
-            <span className="input-group-text" id="inputGroup-sizing-sm">Owner</span>
-              <input type="text" className="form-control" id="owner" aria-describedby="inputGroup-sizing-sm"></input>
-          </div>
-          <div className="input-group">
-            <span className="input-group-text" id="inputGroup-sizing-sm">PHRF Rating</span>
-              <input type="text" className="form-control" id="rating" aria-describedby="inputGroup-sizing-sm"></input>
-          </div>
-          <div className="input-group">
-            <span className="input-group-text" id="inputGroup-sizing-sm">Finish Time</span>
-              <input type="text" className="form-control" id="finish" aria-describedby="inputGroup-sizing-sm"></input>
-          </div>
-          <div className="input-group">
-            <span className="input-group-text" id="inputGroup-sizing-sm">Comments</span>
-            <input type="text" className="form-control" id="comments" aria-describedby="inputGroup-sizing-sm"></input>
-        </div>
-      </div>
-        
-        <div id="add-boat-btn-section">    
-          <button type="button" className="btn btn-outline-primary" id="add-boat-btn" onClick={() => {
-              var boat = document.getElementById("boat").value; 
-              var sail_no = document.getElementById("sail_no").value;
-              var design = document.getElementById("design").value;
-              var owner = document.getElementById("owner").value;
-              var rating = document.getElementById("rating").value;
-              var finish = document.getElementById("finish").value;
-              var comments = document.getElementById("comments").value;
-                      
-              var tcf = 650 / (550 + rating);
-                      
-              var newBoat = {
-                "boat":boat,
-                "sail_no":sail_no,
-                "design":design,
-                "owner":owner,
-                "rating":rating,
-                "tcf":tcf,
-                "finish":finish,
-                "comments":comments,
-              }
-              boats.push(newBoat);
-              console.log(boats)
-            }}>
-            Add Boat
-          </button>                        
-          
-        </div>
-
-    </div>
-  )
-}
+const App = () => {
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [tableData, setTableData] = useState(() => data);
+  const [validationErrors, setValidationErrors] = useState({});
 
 
+  const handleCreateNewRow = (values) => {
 
-/*  
-  var boat = document.getElementById("boat").value;
-  var sail_no = document.getElementById("sail_no").value;
-  var design = document.getElementById("design").value;
-  var owner = document.getElementById("owner").value;
-  var rating = document.getElementById("rating").value;
-  var finish = document.getElementById("finish").value;
-  var comments = document.getElementById("comments").value;
-
-  var tcf = 650 / (550 + rating);
-  
-  var newBoat = {
-    "boat":boat,
-    "sail_no":sail_no,
-    "design":design,
-    "owner":owner,
-    "rating":rating,
-    "tcf":tcf,
-    "finish":finish,
-    "comments":comments,
+    tableData.push(values);
+    //TODO:
+      // create a set of full values from input to 
+      // update table data
+    setTableData(...tableData);
   }
-  boats.push(newBoat);
+
+  const handleDeleteRow = useCallback(
+    (row) => {
+      if (
+        !window.confirm(`Are you sure you want to delete ${row.getValue('boat')}`)
+      ) {
+        return;
+      }
+      tableData.splice(row.index, 1);
+      setTableData(...tableData);
+
+    }
+  )
+
+    const columns = useMemo(
+      () => [
+      {
+        accessorKey: 'boat', //simple recommended way to define a column
+        header: 'Boat',
+        muiTableHeadCellProps: { sx: { color: 'green' } }, //optional custom props
+        Cell: ({ cell }) => <span>{cell.getValue()}</span>, //optional custom cell render
+      },
+      {
+        accessorKey: 'sailNo',
+        header: 'Sail Number',
+      },
+      {
+        accessorKey: 'design',
+        header: 'Design',
+      }, 
+      {
+        accessorKey: 'rating',
+        header: 'Rating',
+      },
+      {
+        accessorKey: 'tcf',
+        header: 'Time Correction Factor',
+      },
+      {
+        accessorKey: 'start',
+        header: 'Start Time',
+      },
+      {
+        accessorKey: 'finish',
+        header: 'Finish Time',
+      },
+      {
+        accessorKey: 'elapsed',
+        header: 'Elapsed Time',
+      },
+      {
+        accessorKey: 'corrected',
+        header: 'Corrected Time',
+      },
+      {
+        accessorKey: 'place',
+        header: 'Finishing Place',
+      },
+      {
+        accessorKey: 'comments',
+        header: 'Comments',
+      }
+      ],
+      [],
+    );
+
+    //optionally, you can manage any/all of the table state yourself
+    const [rowSelection, setRowSelection] = useState({});
+
+    useEffect(() => {
+    //do something when the row selection changes
+    }, [rowSelection]);
+
+    //Or, optionally, you can get a reference to the underlying table instance
+    const tableInstanceRef = useRef(null);
+
+    const someEventHandler = () => {
+    //read the table state during an event from the table instance ref
+    console.log(tableInstanceRef.current.getState().sorting);
+    }
+
+    return (
+      <>
+      <MaterialReactTable
+        displayColumnDefOptions={{
+          'mrt-row-actions': {
+            muiTableHeadCellProps: {
+              align: 'center',
+            },
+            size: 80,
+          },
+        }}
+        columns={columns}
+        data={data}
+        editingMode="modal" //default
+        enableColumnOrdering
+        enableEditing
+    //    onEditingRowSave={handleSaveRowEdits}
+    //    onEditingRowCancel={handleCancelRowEdits}
+        renderRowActions={({ row, table }) => (
+          <Box sx={{ display: 'flex', gap: '1rem' }}>
+            <Tooltip arrow placement="right" title="Delete">
+              <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+                <Delete />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )}
+    /*
+        renderTopToolbarCustomActions={() => (
+          <Button
+            color="secondary"
+            onClick={() => setCreateModalOpen(true)}
+            variant="contained"
+          >
+            Create New Account
+          </Button>
+        )}
+      />
+      <CreateNewAccountModal
+        columns={columns}
+        open={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSubmit={handleCreateNewRow}
+    */
+      />
+    </>
+    );
+  };
+
+
+export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
+const [values, setValues] = useState(() =>
+columns.reduce((acc, column) => {
+  acc[column.accessorKey ?? ''] = '';
+  return acc;
+}, {}),
+);
+const handleSubmit = () => {
+  onSubmit(values);
+  onClose();
+};
+
+return (
+  <Dialog open={open}>
+    <DialogTitle textAlign="center">Create New Account</DialogTitle>
+    <DialogContent>
+      <form onSubmit={(e) => e.preventDefault()}>
+        <Stack
+          sx={{
+            width: '100%',
+            minWidth: { xs: '300px', sm: '360px', md: '400px' },
+            gap: '1.5rem',
+          }}
+        >
+          {columns.map((column) => (
+            <TextField
+              key={column.accessorKey}
+              label={column.header}
+              name={column.accessorKey}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
+            />
+          ))}
+        </Stack>
+      </form>
+    </DialogContent>
+    <DialogActions sx={{ p: '1.25rem' }}>
+      <Button onClick={onClose}>Cancel</Button>
+      <Button color="secondary" onClick={handleSubmit} variant="contained">
+        Create New Account
+      </Button>
+    </DialogActions>
+  </Dialog>
+);
 }
-*/
 
 export default App;
-
-
-
