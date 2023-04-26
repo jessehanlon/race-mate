@@ -18,6 +18,9 @@ import { TimeField } from '@mui/x-date-pickers/TimeField';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+const dayjs = require('dayjs');
+//import dayjs from 'dayjs' // ES 2015
+dayjs().format();
 
 
 const App = () => {
@@ -34,16 +37,17 @@ const App = () => {
 
   const handleCreateNewRow = (values, raceData) => {
     values.start = raceData.pop().start.toString();
+    
+    // update the finish date to match the start date
+    
     values.tcf = (650 / (550 + values.rating)).toFixed(3);
     tableData.push(values);
     setTableData([...tableData]);
   }
 
   const handleCreateNewRace = (raceValues) => {
-    console.log(raceValues);
     raceData.push(raceValues);
     setRaceData([...raceData]);
-    console.log(raceData);
   }
 
   const handleDeleteRow = useCallback(
@@ -284,7 +288,17 @@ export const CreateNewAccountModal = ({ open, columns, onClose, raceData, onSubm
   };
 
   const handleDateChange = (value) => {
-    const finishTime = value.toString().slice(0,-3);
+    // adjusting time
+    const hours = value.hour();
+    const minutes = value.minute();
+    const seconds = value.second();
+
+    const newDate = new Date();
+    newDate.setHours(hours);
+    newDate.setMinutes(minutes);
+    newDate.setSeconds(seconds);
+    
+    const finishTime = newDate.toString().slice(0,-3);
     const e = {target: {name:"finish", value: finishTime}};
     setValues({...values, [e.target.name]: e.target.value});
   }
