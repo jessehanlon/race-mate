@@ -33,16 +33,17 @@ const App = () => {
   
 
   const handleCreateNewRow = (values, raceData) => {
-    console.log(raceData);
-    values.start = raceData[0].start.toString();
+    values.start = raceData.pop().start.toString();
     values.tcf = (650 / (550 + values.rating)).toFixed(3);
     tableData.push(values);
     setTableData([...tableData]);
   }
 
   const handleCreateNewRace = (raceValues) => {
+    console.log(raceValues);
     raceData.push(raceValues);
     setRaceData([...raceData]);
+    console.log(raceData);
   }
 
   const handleDeleteRow = useCallback(
