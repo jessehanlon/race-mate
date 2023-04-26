@@ -21,18 +21,21 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 
 const App = () => {
-
+  
   const [raceData, setRaceData] = useState(() => dataRace);
   const [tableData, setTableData] = useState(() => data);
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [createRaceModalOpen, setCreateRaceModalOpen] = useState(false);
 
-  const [validationErrors, setValidationErrors] = useState({});
+//  const [validationErrors, setValidationErrors] = useState({});
 
+  
 
-
-  const handleCreateNewRow = (values) => {
+  const handleCreateNewRow = (values, raceData) => {
+    console.log(raceData);
+    values.start = raceData[0].start.toString();
+    values.tcf = (650 / (550 + values.rating)).toFixed(3);
     tableData.push(values);
     setTableData([...tableData]);
   }
@@ -183,6 +186,7 @@ const App = () => {
         onClose={() => 
           setCreateModalOpen(false)
         }
+        raceData={raceData}
         onSubmit={handleCreateNewRow}
     
       />
@@ -265,7 +269,7 @@ export const CreateNewRaceModal = ({open, onClose, raceInfo, onNewRaceSubmit}) =
 
 }
 
-export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
+export const CreateNewAccountModal = ({ open, columns, onClose, raceData, onSubmit }) => {
   const [values, setValues] = useState(() =>
     columns.reduce((acc, column) => {
       acc[column.accessorKey ?? ''] = '';
@@ -274,7 +278,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
   );
 
   const handleSubmit = () => {
-    onSubmit(values);
+    onSubmit(values, raceData);
     onClose();
   };
 
@@ -321,13 +325,10 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
                 label={columns[6].header}
                 name={columns[6].accessorKey}
                 format="hh:mm ss"
-                //set date as race date
-
                 onChange={(e, context) => {
                   if(context.validationError == null) {
                   
                     handleDateChange(e)
-                    console.log(e)
                   }
                 }}
               /> 
