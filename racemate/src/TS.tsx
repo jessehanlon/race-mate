@@ -12,3 +12,8 @@ export type Boat = {
     place: number;
     comments: string;
 }
+
+export type Race = {
+    race: string;
+    start: Date;
+}

@@ -13,21 +13,33 @@ import {
   Tooltip,
 } from '@mui/material';
 import { Delete } from '@mui/icons-material';
-import { data } from "./makeData.ts"
+import { data, dataRace } from "./makeData.ts"
 import { TimeField } from '@mui/x-date-pickers/TimeField';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 
 const App = () => {
-  const [createModalOpen, setCreateModalOpen] = useState(false);
+
+  const [raceData, setRaceData] = useState(() => dataRace);
   const [tableData, setTableData] = useState(() => data);
+
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [createRaceModalOpen, setCreateRaceModalOpen] = useState(false);
+
   const [validationErrors, setValidationErrors] = useState({});
+
 
 
   const handleCreateNewRow = (values) => {
     tableData.push(values);
     setTableData([...tableData]);
+  }
+
+  const handleCreateNewRace = (raceValues) => {
+    raceData.push(raceValues);
+    setRaceData([...raceData]);
   }
 
   const handleDeleteRow = useCallback(
@@ -43,6 +55,19 @@ const App = () => {
     }
   )
 
+    const raceInfo = useMemo(
+      () => [
+        {
+          accessorKey: 'race',
+          header: 'Race Name',
+        },
+        {
+          accessorKey: 'start',
+          header: 'Start Time',
+        }
+      ]
+    )
+    
     const columns = useMemo(
       () => [
       {
@@ -100,6 +125,22 @@ const App = () => {
 
     return (
       <>
+      <Button
+        color="secondary"
+        onClick={() => setCreateRaceModalOpen(true)}
+        variant="contained"
+          >
+            Create a Race
+      </Button>
+      <CreateNewRaceModal
+        raceInfo={raceInfo}
+        open={createRaceModalOpen}
+        onClose={() => 
+          setCreateRaceModalOpen(false)
+        }
+        onNewRaceSubmit={handleCreateNewRace}
+      />
+
       <MaterialReactTable
         displayColumnDefOptions={{
           'mrt-row-actions': {
@@ -149,6 +190,80 @@ const App = () => {
     );
   };
 
+export const CreateNewRaceModal = ({open, onClose, raceInfo, onNewRaceSubmit}) => {
+  
+  const [raceValues, setRaceValues] = useState(() => 
+    raceInfo.reduce((acc, raceValue) => {
+    acc[raceValue.accessorKey ?? ''] = '';
+    return acc;
+  }, {}),
+
+  );
+
+  const handleRace = () => {
+    onNewRaceSubmit(raceValues);
+    onClose();
+  };
+
+  const handleDateChange = (raceValue) => {
+    const start = raceValue.toString().slice(0,-3);
+    const e = {target: {name:"start", value: start}};
+    setRaceValues({...raceValues, [e.target.name]: e.target.value});
+  }
+
+  return (
+    <Dialog open={open}>
+      <DialogTitle textAlign="center">Create a Race</DialogTitle>
+      <DialogContent>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <Stack
+            sx={{
+              width: '100%',
+              minWidth: { xs: '300px', sm: '360px', md: '400px' },
+              gap: '1.5rem',
+            }}
+          >
+            {
+              // input race name
+              <TextField
+                key={raceInfo[0].accessorKey}
+                label={raceInfo[0].header}
+                name={raceInfo[0].accessorKey}
+                onChange={(e) => {
+                  setRaceValues({ ...raceValues, [e.target.name]: e.target.value })
+                }}
+              />
+            }
+
+            {
+              // input race date and start time
+              <LocalizationProvider dateAdapter={AdapterDayjs} key={raceInfo[1].index}>
+                <DateTimePicker
+                  key={raceInfo[1].accessorKey}
+                  label={raceInfo[1].header}
+                  name={raceInfo[1].accessorKey}
+                  onChange={(e, context) => {
+                    if(context.validationError == null) {
+                      handleDateChange(e)
+                    }
+                  }}
+                /> 
+              </LocalizationProvider>
+            }
+            
+          </Stack>
+        </form>
+      </DialogContent>
+      <DialogActions sx={{ p: '1.25rem' }}>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button color="secondary" onClick={handleRace} variant="contained">
+          Add Race
+        </Button>
+      </DialogActions>
+    </Dialog>
+  ); 
+
+}
 
 export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
   const [values, setValues] = useState(() =>
