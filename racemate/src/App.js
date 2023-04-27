@@ -22,12 +22,12 @@ const dayjs = require('dayjs');
 //import dayjs from 'dayjs' // ES 2015
 dayjs().format();
 
-
 const App = () => {
   
   const [raceData, setRaceData] = useState(() => dataRace);
-
   const [createRaceModalOpen, setCreateRaceModalOpen] = useState(false);
+
+  const [createTable, setCreateTable] = useState(false);
 
 //  const [validationErrors, setValidationErrors] = useState({});
 
@@ -38,7 +38,6 @@ const App = () => {
     // adding new race
     raceData.push(raceValues);
     setRaceData([...raceData]);
-    console.log(raceValues)
   }
 
     const raceInfo = useMemo(
@@ -54,7 +53,6 @@ const App = () => {
       ]
     )
 
-      
       return (
         <>
       <Button
@@ -62,28 +60,27 @@ const App = () => {
         onClick={() => setCreateRaceModalOpen(true)}
         variant="contained"
           >
-            Create a Race
+            New Race
       </Button>
       <CreateNewRaceModal
         raceInfo={raceInfo}
         open={createRaceModalOpen}
         onClose={() => {
           setCreateRaceModalOpen(false);
+          setCreateTable(true);
         }
         }
         onNewRaceSubmit={handleCreateNewRace}
       />
-          <CreateTable
-            raceData={raceData}
-            />
+      <CreateTable
+        raceData={raceData}
+        show={createTable}
+        />
     </>
         );
       };
       
-      
-
-
-export const CreateTable = ({raceData}) => {
+export const CreateTable = ({raceData, show}) => {
   
   const [tableData, setTableData] = useState(() => data);
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -208,53 +205,58 @@ export const CreateTable = ({raceData}) => {
   
   return (
     <>
-    <MaterialReactTable
-      displayColumnDefOptions={{
-        'mrt-row-actions': {
-          muiTableHeadCellProps: {
-            align: 'center',
+    <div style={show ? {display:'block'} : {display:'none'}}>
+      <div id="race-name" >{raceData[0].race}</div>
+      
+      <MaterialReactTable
+        displayColumnDefOptions={{
+          'mrt-row-actions': {
+            muiTableHeadCellProps: {
+              align: 'center',
+            },
+            size: 80,
           },
-          size: 80,
-        },
-      }}
-      id={"table"}
-      columns={columns}
-      data={tableData}
-      editingMode="modal" //default
-      enableColumnOrdering
-      enableEditing
-  //    onEditingRowSave={handleSaveRowEdits}
-  //    onEditingRowCancel={handleCancelRowEdits}
-      renderRowActions={({ row, table }) => (
-        <Box sx={{ display: 'flex', gap: '1rem' }}>
-          <Tooltip arrow placement="right" title="Delete">
-            <IconButton color="error" onClick={() => handleDeleteRow(row)}>
-              <Delete />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      )}
+        }}
+
+        id={"table"}
+        columns={columns}
+        data={tableData}
+        editingMode="modal" //default
+        enableColumnOrdering
+        enableEditing
+  //      onEditingRowSave={handleSaveRowEdits}
+  //      onEditingRowCancel={handleCancelRowEdits}
+        renderRowActions={({ row, table }) => (
+          <Box sx={{ display: 'flex', gap: '1rem' }}>
+            <Tooltip arrow placement="right" title="Delete">
+              <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+                <Delete />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )}
   
-      renderTopToolbarCustomActions={() => (
-        <Button
-          color="secondary"
-          onClick={() => setCreateModalOpen(true)}
-          variant="contained"
-        >
-          Add a Boat
-        </Button>
-      )}
-    />
-    <CreateNewAccountModal
-      columns={columns}
-      open={createModalOpen}
-      onClose={() => 
-        setCreateModalOpen(false)
-      }
-      raceData={raceData}
-      onSubmit={handleCreateNewRow}
-    />
-  </>
+        renderTopToolbarCustomActions={() => (
+          <Button
+            color="secondary"
+            onClick={() => setCreateModalOpen(true)}
+            variant="contained"
+          >
+            Add a Boat
+          </Button>
+        )}
+      />
+      <CreateNewAccountModal
+        columns={columns}
+        open={createModalOpen}
+        onClose={() => 
+          setCreateModalOpen(false)
+        }
+        raceData={raceData}
+        onSubmit={handleCreateNewRow}
+      />
+    </div>
+    </>
   )
 }
 
@@ -266,19 +268,18 @@ export const CreateNewRaceModal = ({open, onClose, raceInfo, onNewRaceSubmit}) =
     return acc;
   }, {}),
   );
-
+  
   const handleRace = () => {
-    console.log(raceValues)
     onNewRaceSubmit(raceInfo, raceValues);
     onClose();
   };
-
+  
   const handleDateChange = (raceValue) => {
     const date = raceValue["$d"];
+    date.setSeconds(0);
     const e = {target: {name:"start", value: date}};
     setRaceValues({...raceValues, [e.target.name]: e.target.value});
   }
-
   return (
     <Dialog open={open}>
       <DialogTitle textAlign="center">Create a Race</DialogTitle>
@@ -332,7 +333,6 @@ export const CreateNewRaceModal = ({open, onClose, raceInfo, onNewRaceSubmit}) =
       </DialogActions>
     </Dialog>
   ); 
-
 }
 
 export const CreateNewAccountModal = ({ open, columns, onClose, raceData, onSubmit }) => {
@@ -387,7 +387,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, raceData, onSubm
                 format="HH:mm ss"
                 onChange={(e, context) => {
                   if(context.validationError == null) {
-                    setValues({ ...values, ["finish"]: e["$d"] })
+                    setValues({ ...values, "finish": e["$d"] })
                   }
                 }}
               /> 
