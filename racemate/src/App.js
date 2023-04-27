@@ -53,15 +53,28 @@ const App = () => {
     newDate.setMinutes(minutes);
     newDate.setSeconds(seconds);    
 
-    values.start = race.start.toString();
-    values.finish = newDate.toString();
     
     // setting time correction factor
     values.tcf = (650 / (550 + values.rating)).toFixed(3);
+
+    // calculating elapsed time
+    const finishSeconds = (hours * 60 * 60) + (minutes * 60) + seconds;
+    const startSeconds = (race.start.getHours() * 60 * 60) + (race.start.getMinutes() * 60) + race.start.getSeconds();
+    const elapsedTotalSeconds = finishSeconds - startSeconds;     
+
+    const h = Math.floor(elapsedTotalSeconds / 3600).toString().padStart(2,'0');
+    const m = Math.floor(elapsedTotalSeconds % 3600 / 60).toString().padStart(2,'0');
+    const s = Math.floor(elapsedTotalSeconds % 60).toString().padStart(2,'0');
+
+    values.elapsed = h + ':' + m + ':' + s;
     
     // re-adding race to race data
     raceData.push(race);
     
+    values.start = race.start.toString();
+    values.finish = newDate.toString();
+
+
     tableData.push(values);
     setTableData([...tableData]);
   }
