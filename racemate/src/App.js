@@ -36,16 +36,41 @@ const App = () => {
   
 
   const handleCreateNewRow = (values, raceData) => {
-    values.start = raceData.pop().start.toString();
+
+    // pulling race information
+    const race = raceData.pop()
     
-    // update the finish date to match the start date
+    const hours = values.finish.getHours();
+    const minutes = values.finish.getMinutes();
+    const seconds = values.finish.getSeconds();
+
+    // setting up finish date
+    const newDate = new Date();
+    newDate.setDate(race.start.getDate());
+    newDate.setMonth(race.start.getMonth());
+    newDate.setFullYear(race.start.getFullYear());
+    newDate.setHours(hours);
+    newDate.setMinutes(minutes);
+    newDate.setSeconds(seconds);    
+
+    values.start = race.start.toString();
+    values.finish = newDate.toString();
     
+    // setting time correction factor
     values.tcf = (650 / (550 + values.rating)).toFixed(3);
+    
+    // re-adding race to race data
+    raceData.push(race);
+    
     tableData.push(values);
     setTableData([...tableData]);
   }
 
   const handleCreateNewRace = (raceValues) => {
+    // removing old race
+    raceData.pop();
+
+    // adding new race
     raceData.push(raceValues);
     setRaceData([...raceData]);
   }
@@ -215,8 +240,8 @@ export const CreateNewRaceModal = ({open, onClose, raceInfo, onNewRaceSubmit}) =
   };
 
   const handleDateChange = (raceValue) => {
-    const start = raceValue.toString().slice(0,-3);
-    const e = {target: {name:"start", value: start}};
+    const date = raceValue["$d"];
+    const e = {target: {name:"start", value: date}};
     setRaceValues({...raceValues, [e.target.name]: e.target.value});
   }
 
@@ -287,22 +312,6 @@ export const CreateNewAccountModal = ({ open, columns, onClose, raceData, onSubm
     onClose();
   };
 
-  const handleDateChange = (value) => {
-    // adjusting time
-    const hours = value.hour();
-    const minutes = value.minute();
-    const seconds = value.second();
-
-    const newDate = new Date();
-    newDate.setHours(hours);
-    newDate.setMinutes(minutes);
-    newDate.setSeconds(seconds);
-    
-    const finishTime = newDate.toString().slice(0,-3);
-    const e = {target: {name:"finish", value: finishTime}};
-    setValues({...values, [e.target.name]: e.target.value});
-  }
-  
   const inputStringInt = [columns[0], columns[1], columns[2], columns[3]];
 
   return (
@@ -342,8 +351,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, raceData, onSubm
                 format="hh:mm ss"
                 onChange={(e, context) => {
                   if(context.validationError == null) {
-                  
-                    handleDateChange(e)
+                    setValues({ ...values, ["finish"]: e["$d"] })
                   }
                 }}
               /> 
