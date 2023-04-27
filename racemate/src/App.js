@@ -293,6 +293,7 @@ export const CreateNewRaceModal = ({open, onClose, raceInfo, onNewRaceSubmit}) =
               // input race date and start time
               <LocalizationProvider dateAdapter={AdapterDayjs} key={raceInfo[1].index}>
                 <DateTimePicker
+                  format='DD/MM/YYYY HH:mm'
                   key={raceInfo[1].accessorKey}
                   label={raceInfo[1].header}
                   name={raceInfo[1].accessorKey}
@@ -368,7 +369,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, raceData, onSubm
                 key={columns[6].accessorKey}
                 label={columns[6].header}
                 name={columns[6].accessorKey}
-                format="hh:mm ss"
+                format="HH:mm ss"
                 onChange={(e, context) => {
                   if(context.validationError == null) {
                     setValues({ ...values, ["finish"]: e["$d"] })
