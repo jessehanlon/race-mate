@@ -26,20 +26,73 @@ dayjs().format();
 const App = () => {
   
   const [raceData, setRaceData] = useState(() => dataRace);
-  const [tableData, setTableData] = useState(() => data);
 
-  const [createModalOpen, setCreateModalOpen] = useState(false);
   const [createRaceModalOpen, setCreateRaceModalOpen] = useState(false);
 
 //  const [validationErrors, setValidationErrors] = useState({});
 
-  
+  const handleCreateNewRace = (raceInfo, raceValues) => {
+    // removing old race
+    raceData.pop();
 
+    // adding new race
+    raceData.push(raceValues);
+    setRaceData([...raceData]);
+    console.log(raceValues)
+  }
+
+    const raceInfo = useMemo(
+      () => [
+        {
+          accessorKey: 'race',
+          header: 'Race Name',
+        },
+        {
+          accessorKey: 'start',
+          header: 'Start Time',
+        }
+      ]
+    )
+
+      
+      return (
+        <>
+      <Button
+        color="secondary"
+        onClick={() => setCreateRaceModalOpen(true)}
+        variant="contained"
+          >
+            Create a Race
+      </Button>
+      <CreateNewRaceModal
+        raceInfo={raceInfo}
+        open={createRaceModalOpen}
+        onClose={() => {
+          setCreateRaceModalOpen(false);
+        }
+        }
+        onNewRaceSubmit={handleCreateNewRace}
+      />
+          <CreateTable
+            raceData={raceData}
+            />
+    </>
+        );
+      };
+      
+      
+
+
+export const CreateTable = ({raceData}) => {
+  
+  const [tableData, setTableData] = useState(() => data);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  
   const handleCreateNewRow = (values, raceData) => {
 
     // pulling race information
     const race = raceData.pop()
-    
+    console.log(values);
     const hours = values.finish.getHours();
     const minutes = values.finish.getMinutes();
     const seconds = values.finish.getSeconds();
@@ -53,9 +106,8 @@ const App = () => {
     newDate.setMinutes(minutes);
     newDate.setSeconds(seconds);    
 
-    
     // setting time correction factor
-    values.tcf = (650 / (550 + values.rating)).toFixed(4);
+    values.tcf = (650 / (550 + parseInt(values.rating))).toFixed(4);
 
     // calculating elapsed time
     const finishSeconds = (hours * 60 * 60) + (minutes * 60) + seconds;
@@ -86,15 +138,6 @@ const App = () => {
     return h + ':' + m + ':' + s;
   }
 
-  const handleCreateNewRace = (raceValues) => {
-    // removing old race
-    raceData.pop();
-
-    // adding new race
-    raceData.push(raceValues);
-    setRaceData([...raceData]);
-  }
-
   const handleDeleteRow = useCallback(
     (row) => {
       if (
@@ -108,141 +151,112 @@ const App = () => {
     }
   )
 
-    const raceInfo = useMemo(
-      () => [
-        {
-          accessorKey: 'race',
-          header: 'Race Name',
-        },
-        {
-          accessorKey: 'start',
-          header: 'Start Time',
-        }
-      ]
-    )
-    
-    const columns = useMemo(
-      () => [
-      {
-        accessorKey: 'boat', //simple recommended way to define a column
-        header: 'Boat Name',
-        muiTableHeadCellProps: { sx: { color: 'green' } }, //optional custom props
-        side: 100,
-      },
-      {
-        accessorKey: 'sailNo',
-        header: 'Sail Number',
-        size: 60,
-      },
-      {
-        accessorKey: 'design',
-        header: 'Design',
-      }, 
-      {
-        accessorKey: 'rating',
-        header: 'PHRF Rating',
-        size: 60,
-      },
-      {
-        accessorKey: 'tcf',
-        header: 'Time Correction Factor',
-        size: 60,
-      },
-      {
-        accessorKey: 'start',
-        header: 'Start Time',
-      },
-      {
-        accessorKey: 'finish',
-        header: 'Finish Time',
-      },
-      {
-        accessorKey: 'elapsed',
-        header: 'Elapsed Time',
-      },
-      {
-        accessorKey: 'corrected',
-        header: 'Corrected Time',
-      },
-      {
-        accessorKey: 'place',
-        header: 'Finishing Place',
-      },
-      {
-        accessorKey: 'comments',
-        header: 'Comments',
-      }
-      ],
-      [],
-    );
-
-    return (
-      <>
-      <Button
-        color="secondary"
-        onClick={() => setCreateRaceModalOpen(true)}
-        variant="contained"
-          >
-            Create a Race
-      </Button>
-      <CreateNewRaceModal
-        raceInfo={raceInfo}
-        open={createRaceModalOpen}
-        onClose={() => 
-          setCreateRaceModalOpen(false)
-        }
-        onNewRaceSubmit={handleCreateNewRace}
-      />
-
-      <MaterialReactTable
-        displayColumnDefOptions={{
-          'mrt-row-actions': {
-            muiTableHeadCellProps: {
-              align: 'center',
-            },
-            size: 80,
+  const columns = useMemo(
+    () => [
+    {
+      accessorKey: 'boat', //simple recommended way to define a column
+      header: 'Boat Name',
+      muiTableHeadCellProps: { sx: { color: 'green' } }, //optional custom props
+      side: 100,
+    },
+    {
+      accessorKey: 'sailNo',
+      header: 'Sail Number',
+      size: 60,
+    },
+    {
+      accessorKey: 'design',
+      header: 'Design',
+    }, 
+    {
+      accessorKey: 'rating',
+      header: 'PHRF Rating',
+      size: 60,
+    },
+    {
+      accessorKey: 'tcf',
+      header: 'Time Correction Factor',
+      size: 60,
+    },
+    {
+      accessorKey: 'start',
+      header: 'Start Time',
+    },
+    {
+      accessorKey: 'finish',
+      header: 'Finish Time',
+    },
+    {
+      accessorKey: 'elapsed',
+      header: 'Elapsed Time',
+    },
+    {
+      accessorKey: 'corrected',
+      header: 'Corrected Time',
+    },
+    {
+      accessorKey: 'place',
+      header: 'Finishing Place',
+    },
+    {
+      accessorKey: 'comments',
+      header: 'Comments',
+    }
+    ],
+    [],
+  );
+  
+  return (
+    <>
+    <MaterialReactTable
+      displayColumnDefOptions={{
+        'mrt-row-actions': {
+          muiTableHeadCellProps: {
+            align: 'center',
           },
-        }}
-        columns={columns}
-        data={tableData}
-        editingMode="modal" //default
-        enableColumnOrdering
-        enableEditing
-    //    onEditingRowSave={handleSaveRowEdits}
-    //    onEditingRowCancel={handleCancelRowEdits}
-        renderRowActions={({ row, table }) => (
-          <Box sx={{ display: 'flex', gap: '1rem' }}>
-            <Tooltip arrow placement="right" title="Delete">
-              <IconButton color="error" onClick={() => handleDeleteRow(row)}>
-                <Delete />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        )}
-    
-        renderTopToolbarCustomActions={() => (
-          <Button
-            color="secondary"
-            onClick={() => setCreateModalOpen(true)}
-            variant="contained"
-          >
-            Add a Boat
-          </Button>
-        )}
-      />
-      <CreateNewAccountModal
-        columns={columns}
-        open={createModalOpen}
-        onClose={() => 
-          setCreateModalOpen(false)
-        }
-        raceData={raceData}
-        onSubmit={handleCreateNewRow}
-    
-      />
-    </>
-    );
-  };
+          size: 80,
+        },
+      }}
+      id={"table"}
+      columns={columns}
+      data={tableData}
+      editingMode="modal" //default
+      enableColumnOrdering
+      enableEditing
+  //    onEditingRowSave={handleSaveRowEdits}
+  //    onEditingRowCancel={handleCancelRowEdits}
+      renderRowActions={({ row, table }) => (
+        <Box sx={{ display: 'flex', gap: '1rem' }}>
+          <Tooltip arrow placement="right" title="Delete">
+            <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+              <Delete />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )}
+  
+      renderTopToolbarCustomActions={() => (
+        <Button
+          color="secondary"
+          onClick={() => setCreateModalOpen(true)}
+          variant="contained"
+        >
+          Add a Boat
+        </Button>
+      )}
+    />
+    <CreateNewAccountModal
+      columns={columns}
+      open={createModalOpen}
+      onClose={() => 
+        setCreateModalOpen(false)
+      }
+      raceData={raceData}
+      onSubmit={handleCreateNewRow}
+    />
+  </>
+  )
+}
 
 export const CreateNewRaceModal = ({open, onClose, raceInfo, onNewRaceSubmit}) => {
   
@@ -251,11 +265,11 @@ export const CreateNewRaceModal = ({open, onClose, raceInfo, onNewRaceSubmit}) =
     acc[raceValue.accessorKey ?? ''] = '';
     return acc;
   }, {}),
-
   );
 
   const handleRace = () => {
-    onNewRaceSubmit(raceValues);
+    console.log(raceValues)
+    onNewRaceSubmit(raceInfo, raceValues);
     onClose();
   };
 
@@ -311,7 +325,8 @@ export const CreateNewRaceModal = ({open, onClose, raceInfo, onNewRaceSubmit}) =
       </DialogContent>
       <DialogActions sx={{ p: '1.25rem' }}>
         <Button onClick={onClose}>Cancel</Button>
-        <Button color="secondary" onClick={handleRace} variant="contained">
+        <Button color="secondary" onClick={handleRace}
+        variant="contained">
           Add Race
         </Button>
       </DialogActions>
