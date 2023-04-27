@@ -36,3 +36,21 @@
     transform: rotate(360deg);
   }
 }
+
+#add-race-area {
+  text-align: center;
+}
+
+#new-race-btn {
+  font-size:20px;
+}
+
+#race-name-area {
+  text-align:center;
+  padding-top: 2%;
+}
+
+#race-name {
+  font-size: 24px;
+  font-weight: 700;
+}

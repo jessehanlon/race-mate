@@ -18,6 +18,7 @@ import { TimeField } from '@mui/x-date-pickers/TimeField';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import './App.css';
 const dayjs = require('dayjs');
 //import dayjs from 'dayjs' // ES 2015
 dayjs().format();
@@ -34,10 +35,13 @@ const App = () => {
   const handleCreateNewRace = (raceInfo, raceValues) => {
     // removing old race
     raceData.pop();
-
+    
     // adding new race
     raceData.push(raceValues);
     setRaceData([...raceData]);
+    
+    // show table
+    setCreateTable(true);
   }
 
     const raceInfo = useMemo(
@@ -55,29 +59,32 @@ const App = () => {
 
       return (
         <>
-      <Button
-        color="secondary"
-        onClick={() => setCreateRaceModalOpen(true)}
-        variant="contained"
-          >
-            New Race
-      </Button>
-      <CreateNewRaceModal
-        raceInfo={raceInfo}
-        open={createRaceModalOpen}
-        onClose={() => {
-          setCreateRaceModalOpen(false);
-          setCreateTable(true);
-        }
-        }
-        onNewRaceSubmit={handleCreateNewRace}
-      />
-      <CreateTable
-        raceData={raceData}
-        show={createTable}
-        />
-    </>
-        );
+          <div id="add-race-area">
+            <Button
+              color="primary"
+              onClick={() => setCreateRaceModalOpen(true)}
+              variant="contained"
+              id="new-race-btn"
+                >
+                  New Race
+            </Button>
+          </div>
+            <CreateNewRaceModal
+              raceInfo={raceInfo}
+              open={createRaceModalOpen}
+              onClose={() => {
+                setCreateRaceModalOpen(false);
+                
+              }
+              }
+              onNewRaceSubmit={handleCreateNewRace}
+            />
+            <CreateTable
+              raceData={raceData}
+              show={createTable}
+            />
+        </>
+      );
       };
       
 export const CreateTable = ({raceData, show}) => {
@@ -154,26 +161,28 @@ export const CreateTable = ({raceData, show}) => {
       accessorKey: 'boat', //simple recommended way to define a column
       header: 'Boat Name',
       muiTableHeadCellProps: { sx: { color: 'green' } }, //optional custom props
-      side: 100,
+      size: 60,
+      width: 40,
     },
     {
       accessorKey: 'sailNo',
       header: 'Sail Number',
-      size: 60,
+      size: 20,
     },
     {
       accessorKey: 'design',
       header: 'Design',
+      size: 70
     }, 
     {
       accessorKey: 'rating',
       header: 'PHRF Rating',
-      size: 60,
+      size: 40,
     },
     {
       accessorKey: 'tcf',
       header: 'Time Correction Factor',
-      size: 60,
+      size: 40,
     },
     {
       accessorKey: 'start',
@@ -194,6 +203,7 @@ export const CreateTable = ({raceData, show}) => {
     {
       accessorKey: 'place',
       header: 'Finishing Place',
+      size: 30,
     },
     {
       accessorKey: 'comments',
@@ -206,15 +216,16 @@ export const CreateTable = ({raceData, show}) => {
   return (
     <>
     <div style={show ? {display:'block'} : {display:'none'}}>
-      <div id="race-name" >{raceData[0].race}</div>
-      
+      <div id="race-name-area">
+        <div id="race-name" >{raceData[0].race}</div>
+      </div>
       <MaterialReactTable
         displayColumnDefOptions={{
           'mrt-row-actions': {
             muiTableHeadCellProps: {
               align: 'center',
             },
-            size: 80,
+            size: 40,
           },
         }}
 
@@ -299,7 +310,7 @@ export const CreateNewRaceModal = ({open, onClose, raceInfo, onNewRaceSubmit}) =
                 label={raceInfo[0].header}
                 name={raceInfo[0].accessorKey}
                 onChange={(e) => {
-                  setRaceValues({ ...raceValues, [e.target.name]: e.target.value })
+                  setRaceValues({ ...raceValues, [e.target.name]: e.target.value.toUpperCase() })
                 }}
               />
             }
@@ -308,7 +319,7 @@ export const CreateNewRaceModal = ({open, onClose, raceInfo, onNewRaceSubmit}) =
               // input race date and start time
               <LocalizationProvider dateAdapter={AdapterDayjs} key={raceInfo[1].index}>
                 <DateTimePicker
-                  format='DD/MM/YYYY HH:mm'
+                  format='MM/DD/YYYY HH:mm'
                   key={raceInfo[1].accessorKey}
                   label={raceInfo[1].header}
                   name={raceInfo[1].accessorKey}
