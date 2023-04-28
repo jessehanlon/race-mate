@@ -7,6 +7,7 @@ export type Boat = {
     start: Date;
     finish: Date;
     elapsed: number;
+    corrected_seconds;
     tcf: number;
     corrected: number;
     place: number;

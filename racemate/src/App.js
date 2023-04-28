@@ -96,7 +96,6 @@ export const CreateTable = ({raceData, show}) => {
 
     // pulling race information
     const race = raceData.pop()
-    console.log(values);
     const hours = values.finish.getHours();
     const minutes = values.finish.getMinutes();
     const seconds = values.finish.getSeconds();
@@ -119,9 +118,10 @@ export const CreateTable = ({raceData, show}) => {
     const elapsedTotalSeconds = finishSeconds - startSeconds;     
 
     values.elapsed = secondsToTime(elapsedTotalSeconds);
-    
-    values.corrected = secondsToTime(elapsedTotalSeconds * values.tcf);
-    console.log(values.corrected)
+    values.corrected_seconds = elapsedTotalSeconds * values.tcf;
+    values.corrected = secondsToTime(values.corrected_seconds);
+
+    values.place = calculatePlacings(tableData, values);
 
     // re-adding race to race data
     raceData.push(race);
@@ -162,7 +162,6 @@ export const CreateTable = ({raceData, show}) => {
       header: 'Boat Name',
       muiTableHeadCellProps: { sx: { color: 'green' } }, //optional custom props
       size: 60,
-      width: 40,
     },
     {
       accessorKey: 'sailNo',
@@ -172,12 +171,12 @@ export const CreateTable = ({raceData, show}) => {
     {
       accessorKey: 'design',
       header: 'Design',
-      size: 70
+      size: 40
     }, 
     {
       accessorKey: 'rating',
       header: 'PHRF Rating',
-      size: 40,
+      size: 20,
     },
     {
       accessorKey: 'tcf',
@@ -187,6 +186,7 @@ export const CreateTable = ({raceData, show}) => {
     {
       accessorKey: 'start',
       header: 'Start Time',
+
     },
     {
       accessorKey: 'finish',
@@ -195,10 +195,12 @@ export const CreateTable = ({raceData, show}) => {
     {
       accessorKey: 'elapsed',
       header: 'Elapsed Time',
+      size: 40,
     },
     {
       accessorKey: 'corrected',
       header: 'Corrected Time',
+      size: 40,
     },
     {
       accessorKey: 'place',
@@ -213,6 +215,27 @@ export const CreateTable = ({raceData, show}) => {
     [],
   );
   
+  function calculatePlacings(tableData, values) {
+    
+    const time = values.corrected_seconds;
+    
+    if(tableData.length === 0) {
+      return 1;
+    }
+    
+    var slowerBoats = 0;
+    for(var place = 0; place < tableData.length; place++) {
+      if (time < tableData[place].corrected_seconds) {
+        
+        // update slower boats' place
+          tableData[place].place += 1;
+        }
+        slowerBoats += 1;
+      }
+    console.log('done');
+    return (tableData.length - slowerBoats) + 1;
+  }
+
   return (
     <>
     <div style={show ? {display:'block'} : {display:'none'}}>
@@ -228,7 +251,7 @@ export const CreateTable = ({raceData, show}) => {
             size: 40,
           },
         }}
-
+        initialState={{ columnVisibility: { tcf: false }}}
         id={"table"}
         columns={columns}
         data={tableData}
