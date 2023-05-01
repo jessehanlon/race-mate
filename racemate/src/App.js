@@ -20,7 +20,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import './App.css';
 const dayjs = require('dayjs');
-//import dayjs from 'dayjs' // ES 2015
 dayjs().format();
 
 const App = () => {
@@ -85,8 +84,8 @@ const App = () => {
             />
         </>
       );
-      };
-      
+};
+
 export const CreateTable = ({raceData, show}) => {
   
   const [tableData, setTableData] = useState(() => data);
@@ -304,6 +303,9 @@ export const CreateNewRaceModal = ({open, onClose, raceInfo, onNewRaceSubmit}) =
   );
   
   const handleRace = () => {
+    if(raceValues.start === "") {
+      return;
+    }    
     onNewRaceSubmit(raceInfo, raceValues);
     onClose();
   };
@@ -348,7 +350,9 @@ export const CreateNewRaceModal = ({open, onClose, raceInfo, onNewRaceSubmit}) =
                   name={raceInfo[1].accessorKey}
                   onChange={(e, context) => {
                     if(context.validationError == null) {
-                      handleDateChange(e)
+                      if(e != null) {
+                        handleDateChange(e);
+                      }
                     }
                   }}
                 /> 
@@ -378,6 +382,18 @@ export const CreateNewAccountModal = ({ open, columns, onClose, raceData, onSubm
   );
 
   const handleSubmit = () => {
+    if(values.boat === "") {
+      return;
+    }
+    if(values.sailNo === "") {
+      return;
+    }
+    if(values.rating === "") {
+      return;
+    }
+    if(values.finish === "") {
+      return;
+    }
     onSubmit(values, raceData);
     onClose();
   };
