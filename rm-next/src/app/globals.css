@@ -51,3 +51,7 @@ a {
   text-align: center;
   padding: 2.5%;
 }
+
+#gh-logo {
+  transform: scale(0.15);
+}

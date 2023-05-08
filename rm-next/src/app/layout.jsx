@@ -41,7 +41,7 @@ export default function RootLayout({ children }) {
 
         <div id="gh-link-section">
           <a href="https://github.com/jessehanlon/race-mate" id="'gh-link">
-            <img src="./github-mark.png" id="gh-logo"></img>
+            <img src="/github-mark.png" id="gh-logo"></img>
           </a>
         </div>
       </body>
