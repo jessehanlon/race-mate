@@ -17,17 +17,17 @@ model Race {
   date        DateTime
 }
 
-model Boat {
-  id                Int      @id @default(autoincrement())
-  name              String
-  rating            Int
-  sail_no           String
-  design            String  
-  tcf               Float
-  start_time        DateTime
-  finish_time       DateTime
-  elapsed           Int
-  corrected         Int
-  finishing_place   Int
-  comments          String
-}
+//model Boat {
+//  id                Int      @id @default(autoincrement())
+//  name              String
+//  rating            Int
+//  sail_no           String
+//  design            String  
+//  tcf               Float
+//  start_time        DateTime
+//  finish_time       DateTime
+//  elapsed           Int
+//  corrected         Int
+//  finishing_place   Int
+//  comments          String
+//}
